@@ -5,6 +5,7 @@ using UnityEngine;
 public class PlayerController : MonoBehaviour
 {
     public float timingThreshold = 0.8f;
+    public float speed = 5f;
     private float clickTime;
     private bool controlsEnabled = true;
     private Animator animator;
@@ -21,13 +22,19 @@ public class PlayerController : MonoBehaviour
             clickTime = Time.time;
             if (Time.time - clickTime <= timingThreshold)
             {
-                transform.Translate(Vector3.forward * Time.deltaTime * 5f);
+                controlsEnabled = false;
+                transform.position += new Vector3(0, 0, 1) * speed;
+                animator.SetTrigger("jumpTrigger");
             }
             else {
                 controlsEnabled = false;
                 animator.SetTrigger("fallTrigger");
             }
         }
+    }
+
+    public void OnJumpAnimationEnd() {
+        controlsEnabled = true;
     }
 
     public void OnFallAnimationEnd() {
