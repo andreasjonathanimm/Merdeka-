@@ -1,15 +1,18 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class PlayerController : MonoBehaviour
 {
-    public float timingThreshold = 0.8f;
+    public float timingThreshold = 80f;
     public float speed = 5f;
     private float clickTime;
+    private float value;
     private bool controlsEnabled = true;
+    private bool direction = true;
     private Animator animator;
-    public GameObject thresholdScroll;
+    public Slider thresholdSlider;
 
     private void Start() {
         animator = GetComponent<Animator>();
@@ -17,19 +20,34 @@ public class PlayerController : MonoBehaviour
 
     private void Update()
     {
+        value = thresholdSlider.value;
         if (Input.GetMouseButtonDown(0) && controlsEnabled)
         {
-            clickTime = Time.time;
-            if (Time.time - clickTime <= timingThreshold)
+            if (value > timingThreshold)
             {
-                controlsEnabled = false;
-                transform.position += new Vector3(0, 0, 1) * speed;
                 animator.SetTrigger("jumpTrigger");
-            }
-            else {
                 controlsEnabled = false;
-                animator.SetTrigger("fallTrigger");
             }
+            else
+            {
+                animator.SetTrigger("fallTrigger");
+                controlsEnabled = false;
+            }
+        }
+    }
+
+    private void FixedUpdate() {
+        if (direction) {
+            thresholdSlider.value += 0.01f * thresholdSlider.maxValue;
+        }
+        else {
+            thresholdSlider.value -= 0.01f * thresholdSlider.maxValue;
+        }
+        if (value >= thresholdSlider.maxValue) {
+            direction = false;
+        }
+        else if (value <= 0) {
+            direction = true;
         }
     }
 

@@ -900,7 +900,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   timingThreshold: 0.2
   speed: 2
-  thresholdScroll: {fileID: 1573226059}
+  thresholdSlider: {fileID: 1573226062}
 --- !u!1 &698299588
 GameObject:
   m_ObjectHideFlags: 0
@@ -1873,8 +1873,8 @@ MonoBehaviour:
   m_HandleRect: {fileID: 1495974364}
   m_Direction: 1
   m_MinValue: 0
-  m_MaxValue: 1
-  m_WholeNumbers: 0
+  m_MaxValue: 100
+  m_WholeNumbers: 1
   m_Value: 0
   m_OnValueChanged:
     m_PersistentCalls:

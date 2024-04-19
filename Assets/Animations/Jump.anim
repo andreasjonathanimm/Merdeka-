@@ -28,17 +28,17 @@ AnimationClip:
         inWeight: {x: 0.33333334, y: 0.33333334, z: 0.33333334}
         outWeight: {x: 0.33333334, y: 0.33333334, z: 0.33333334}
       - serializedVersion: 3
-        time: 0.33333334
-        value: {x: 0, y: 0.3, z: 0.11000061}
+        time: 0.25
+        value: {x: 0, y: 0.29999995, z: 2.110001}
         inSlope: {x: 0, y: -0.142513, z: 0}
-        outSlope: {x: 0, y: -22.951517, z: 0}
+        outSlope: {x: 0, y: -22.951517, z: -0.0000019073486}
         tangentMode: 0
         weightedMode: 2
         inWeight: {x: 0.33333334, y: 0.14589572, z: 0.33333334}
         outWeight: {x: 0.33333334, y: 0.08101452, z: 0.33333334}
       - serializedVersion: 3
         time: 0.5
-        value: {x: 0, y: 0, z: 0.11000061}
+        value: {x: 0, y: 0, z: 2.1100006}
         inSlope: {x: 0, y: 0, z: 0}
         outSlope: {x: 0, y: 0, z: 0}
         tangentMode: 0
@@ -104,7 +104,7 @@ AnimationClip:
         inWeight: 0.33333334
         outWeight: 0.33333334
       - serializedVersion: 3
-        time: 0.33333334
+        time: 0.25
         value: 0
         inSlope: 0
         outSlope: 0
@@ -143,8 +143,8 @@ AnimationClip:
         inWeight: 0.33333334
         outWeight: 0.33333334
       - serializedVersion: 3
-        time: 0.33333334
-        value: 0.3
+        time: 0.25
+        value: 0.29999995
         inSlope: -0.142513
         outSlope: -22.951517
         tangentMode: 1
@@ -182,17 +182,17 @@ AnimationClip:
         inWeight: 0.33333334
         outWeight: 0.33333334
       - serializedVersion: 3
-        time: 0.33333334
-        value: 0.11000061
+        time: 0.25
+        value: 2.110001
         inSlope: 0
-        outSlope: 0
+        outSlope: -0.0000019073486
         tangentMode: 65
         weightedMode: 0
         inWeight: 0.33333334
         outWeight: 0.33333334
       - serializedVersion: 3
         time: 0.5
-        value: 0.11000061
+        value: 2.1100006
         inSlope: 0
         outSlope: 0
         tangentMode: 136
@@ -211,7 +211,7 @@ AnimationClip:
   m_HasGenericRootTransform: 1
   m_HasMotionFloatCurves: 0
   m_Events:
-  - time: 0.06666667
+  - time: 0.5
     functionName: OnJumpAnimationEnd
     data: 
     objectReferenceParameter: {fileID: 0}
