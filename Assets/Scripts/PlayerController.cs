@@ -5,57 +5,40 @@ using UnityEngine.UI;
 
 public class PlayerController : MonoBehaviour
 {
+    private Rigidbody rb;
+    private bool controlsEnabled = true;
+    private bool winYet = false;
+    public Slider thresholdSlider;
     public float timingThreshold = 80f;
     public float speed = 5f;
-    private float clickTime;
-    private float value;
-    private bool controlsEnabled = true;
-    private bool direction = true;
-    private Animator animator;
-    public Slider thresholdSlider;
+    public float delay = 0.25f;
+
+    private IEnumerator ResetControls() {
+        yield return new WaitForSeconds(delay);
+        controlsEnabled = true;
+    }
 
     private void Start() {
-        animator = GetComponent<Animator>();
+        rb = GetComponent<Rigidbody>();
     }
 
-    private void Update()
-    {
-        value = thresholdSlider.value;
-        if (Input.GetMouseButtonDown(0) && controlsEnabled)
-        {
-            if (value > timingThreshold)
-            {
-                animator.SetTrigger("jumpTrigger");
+    public void OnButtonPress() {
+        if (controlsEnabled && !winYet) {
+            if (thresholdSlider.value >= timingThreshold) {
+                rb.AddForce(Vector3.up * speed, ForceMode.Impulse);
+                rb.AddForce(Vector3.forward * speed, ForceMode.Impulse);
                 controlsEnabled = false;
-            }
-            else
-            {
-                animator.SetTrigger("fallTrigger");
+                StartCoroutine(ResetControls());
+            } else {
+                rb.AddForce(Vector3.back * speed / 1.5f, ForceMode.Impulse);
                 controlsEnabled = false;
+                StartCoroutine(ResetControls());
             }
         }
     }
 
-    private void FixedUpdate() {
-        if (direction) {
-            thresholdSlider.value += 0.01f * thresholdSlider.maxValue;
-        }
-        else {
-            thresholdSlider.value -= 0.01f * thresholdSlider.maxValue;
-        }
-        if (value >= thresholdSlider.maxValue) {
-            direction = false;
-        }
-        else if (value <= 0) {
-            direction = true;
-        }
-    }
-
-    public void OnJumpAnimationEnd() {
-        controlsEnabled = true;
-    }
-
-    public void OnFallAnimationEnd() {
-        controlsEnabled = true;
+    public void OnWin(int ranking) {
+        Debug.Log("You win! Your ranking is: " + ranking);
+        winYet = true;
     }
 }
