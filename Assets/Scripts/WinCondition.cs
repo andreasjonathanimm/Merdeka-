@@ -22,12 +22,12 @@ public class WinCondition : MonoBehaviour
     {
         if (other == playerCollider && !winYet)
         {
-            player.GetComponent<PlayerController>().OnWin(ranking);
+            player.GetComponent<PlayerControllerRace>().OnWin(ranking);
             winYet = true;
             ranking += 1;
         }
         else  if (other != playerCollider) {
-            other.GetComponent<BotController>().OnWin(ranking);
+            other.GetComponent<BotControllerRace>().OnWin(ranking);
             ranking += 1;
         }
     }
