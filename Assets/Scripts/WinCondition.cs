@@ -10,6 +10,8 @@ public class WinCondition : MonoBehaviour
     private CapsuleCollider playerCollider;
     private bool winYet = false;
     private int ranking = 1;
+    public ParticleSystem winEffect1;
+    public ParticleSystem winEffect2;
 
     private void Start()
     {
@@ -25,6 +27,8 @@ public class WinCondition : MonoBehaviour
             player.GetComponent<PlayerControllerRace>().OnWin(ranking);
             winYet = true;
             ranking += 1;
+            winEffect1.Play();
+            winEffect2.Play();
         }
         else  if (other != playerCollider) {
             other.GetComponent<BotControllerRace>().OnWin(ranking);

@@ -40,5 +40,6 @@ public class PlayerControllerRace : MonoBehaviour
     public void OnWin(int ranking) {
         Debug.Log("You win! Your ranking is: " + ranking);
         winYet = true;
+        thresholdSlider.gameObject.SetActive(false);
     }
 }
