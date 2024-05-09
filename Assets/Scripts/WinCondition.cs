@@ -1,6 +1,8 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
+using TMPro;
 
 public class WinCondition : MonoBehaviour
 {
@@ -10,8 +12,37 @@ public class WinCondition : MonoBehaviour
     private CapsuleCollider playerCollider;
     private bool winYet = false;
     private int ranking = 1;
+
+    // Particles
     public ParticleSystem winEffect1;
     public ParticleSystem winEffect2;
+
+    // Audio
+    public AudioSource musicPlayer;
+    public AudioClip winMusic;
+
+    // UI
+    public TMP_Text winText;
+
+    private string rankText(int rank)
+    {
+        if (rank == 1)
+        {
+            return "1st";
+        }
+        else if (rank == 2)
+        {
+            return "2nd";
+        }
+        else if (rank == 3)
+        {
+            return "3rd";
+        }
+        else
+        {
+            return rank.ToString() + "th";
+        }
+    }
 
     private void Start()
     {
@@ -26,9 +57,20 @@ public class WinCondition : MonoBehaviour
         {
             player.GetComponent<PlayerControllerRace>().OnWin(ranking);
             winYet = true;
-            ranking += 1;
+
+            // Play win effects
             winEffect1.Play();
             winEffect2.Play();
+
+            // Play win music
+            musicPlayer.clip = winMusic;
+            musicPlayer.Play();
+            musicPlayer.loop = false;
+
+            // Display win text
+            winText.text = "You got " + rankText(ranking) + " place!";
+            winText.gameObject.SetActive(true);
+            ranking += 1;
         }
         else  if (other != playerCollider) {
             other.GetComponent<BotControllerRace>().OnWin(ranking);
