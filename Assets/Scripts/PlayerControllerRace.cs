@@ -12,6 +12,9 @@ public class PlayerControllerRace : MonoBehaviour
     public float timingThreshold = 80f;
     public float speed = 5f;
     public float delay = 0.25f;
+    public AudioClip jumpSound;
+    public AudioClip fallSound;
+    public AudioSource audioSource;
 
     private IEnumerator ResetControls() {
         yield return new WaitForSeconds(delay);
@@ -27,10 +30,12 @@ public class PlayerControllerRace : MonoBehaviour
             if (thresholdSlider.value >= timingThreshold) {
                 rb.AddForce(Vector3.up * speed, ForceMode.Impulse);
                 rb.AddForce(Vector3.forward * speed, ForceMode.Impulse);
+                audioSource.PlayOneShot(jumpSound);
                 controlsEnabled = false;
                 StartCoroutine(ResetControls());
             } else {
                 rb.AddForce(Vector3.back * speed / 1.5f, ForceMode.Impulse);
+                audioSource.PlayOneShot(fallSound);
                 controlsEnabled = false;
                 StartCoroutine(ResetControls());
             }
