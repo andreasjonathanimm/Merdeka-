@@ -4,7 +4,7 @@ using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
 
-public class WinCondition : MonoBehaviour
+public class WinConditionRace : MonoBehaviour
 {
     private BoxCollider objectCollider;
     private GameObject player;
