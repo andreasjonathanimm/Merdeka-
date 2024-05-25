@@ -61,4 +61,14 @@ public class BotControllerRace : MonoBehaviour
         Debug.Log("Bot " + gameObject.name + " wins! Ranking: " + ranking);
         winYet = true;
     }
+
+    public void startControls()
+    {
+        controlsEnabled = true;
+    }
+
+    public void stopControls()
+    {
+        controlsEnabled = false;
+    }
 }

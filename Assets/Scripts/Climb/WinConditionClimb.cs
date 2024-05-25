@@ -18,10 +18,12 @@ public class WinConditionClimb : MonoBehaviour
     public ParticleSystem winEffect2;
 
     // Audio
-    public AudioSource musicPlayer;
+    private GameSystem system;
     public AudioClip winMusic;
+    public AudioClip music;
 
     // UI
+    public TMP_Text countdownText;
     public TMP_Text winText;
 
     private string rankText(int rank)
@@ -49,6 +51,13 @@ public class WinConditionClimb : MonoBehaviour
         objectCollider = GetComponent<BoxCollider>();
         player = GameObject.Find("Player");
         playerCollider = player.GetComponent<CapsuleCollider>();
+        system = GameObject.Find("System").GetComponent<GameSystem>();
+
+        system.playMusic(music);
+        system.setMusicLoop(true);
+
+        StartCoroutine(gameCountdown(3));
+        StartCoroutine(textCountdown(3));
     }
 
     private void OnTriggerEnter(Collider other)
@@ -61,14 +70,15 @@ public class WinConditionClimb : MonoBehaviour
             winEffect1.Play();
 
             // Play win music
-            musicPlayer.clip = winMusic;
-            musicPlayer.Play();
-            musicPlayer.loop = false;
+            system.playMusic(winMusic);
+            system.setMusicLoop(false);
 
             // Display win text
             winText.text = "You got " + rankText(ranking) + " place!";
             winText.gameObject.SetActive(true);
             ranking += 1;
+
+            StartCoroutine(winDelay());
         }
         else  if (other != playerCollider) {
             other.GetComponent<BotControllerClimb>().OnWin(ranking);
@@ -76,5 +86,33 @@ public class WinConditionClimb : MonoBehaviour
 
             winEffect2.Play();
         }
+    }
+
+    private IEnumerator gameCountdown(int seconds)
+    {
+        GameObject.FindObjectsOfType<BotControllerClimb>()[0].GetComponent<BotControllerClimb>().stopControls();
+        GameObject.FindObjectsOfType<PlayerControllerClimb>()[0].GetComponent<PlayerControllerClimb>().stopControls();
+        yield return new WaitForSeconds(seconds);
+        GameObject.FindObjectsOfType<BotControllerClimb>()[0].GetComponent<BotControllerClimb>().startControls();
+        GameObject.FindObjectsOfType<PlayerControllerClimb>()[0].GetComponent<PlayerControllerClimb>().startControls();
+    }
+
+    private IEnumerator textCountdown(int seconds)
+    {
+        for (int i = seconds; i > 0; i--)
+        {
+            int index = i;
+            countdownText.text = index.ToString() + "...";
+            system.playSound(system.buttonSound);
+            yield return new WaitForSeconds(1);
+        }
+        countdownText.text = "Go!";
+        countdownText.gameObject.SetActive(false);
+    }
+
+    private IEnumerator winDelay()
+    {
+        yield return new WaitForSeconds(5);
+        system.loadGameMenu();
     }
 }

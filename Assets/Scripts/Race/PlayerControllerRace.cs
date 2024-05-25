@@ -14,7 +14,7 @@ public class PlayerControllerRace : MonoBehaviour
     public float delay = 0.25f;
     public AudioClip jumpSound;
     public AudioClip fallSound;
-    public AudioSource audioSource;
+    private GameSystem system;
 
     private IEnumerator ResetControls() {
         yield return new WaitForSeconds(delay);
@@ -23,6 +23,7 @@ public class PlayerControllerRace : MonoBehaviour
 
     private void Start() {
         rb = GetComponent<Rigidbody>();
+        system = GameObject.Find("System").GetComponent<GameSystem>();
     }
 
     public void OnButtonPress() {
@@ -30,12 +31,12 @@ public class PlayerControllerRace : MonoBehaviour
             if (thresholdSlider.value >= timingThreshold) {
                 rb.AddForce(Vector3.up * speed, ForceMode.Impulse);
                 rb.AddForce(Vector3.forward * speed, ForceMode.Impulse);
-                audioSource.PlayOneShot(jumpSound);
+                system.playSound(jumpSound);
                 controlsEnabled = false;
                 StartCoroutine(ResetControls());
             } else {
                 rb.AddForce(Vector3.back * speed / 1.5f, ForceMode.Impulse);
-                audioSource.PlayOneShot(fallSound);
+                system.playSound(fallSound);
                 controlsEnabled = false;
                 StartCoroutine(ResetControls());
             }
@@ -46,5 +47,13 @@ public class PlayerControllerRace : MonoBehaviour
         Debug.Log("You win! Your ranking is: " + ranking);
         winYet = true;
         thresholdSlider.gameObject.SetActive(false);
+    }
+
+    public void startControls() {
+        controlsEnabled = true;
+    }
+
+    public void stopControls() {
+        controlsEnabled = false;
     }
 }

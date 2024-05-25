@@ -4,5 +4,17 @@
 EditorBuildSettings:
   m_ObjectHideFlags: 0
   serializedVersion: 2
-  m_Scenes: []
+  m_Scenes:
+  - enabled: 1
+    path: Assets/Scenes/MainMenu.unity
+    guid: 394ea1a86beda9846a113eb8ccad38e1
+  - enabled: 1
+    path: Assets/Scenes/Race.unity
+    guid: 9fc0d4010bbf28b4594072e72b8655ab
+  - enabled: 1
+    path: Assets/Scenes/Climb.unity
+    guid: 0f5eeaa67ae996f4d88107ca2ad0e0e2
+  - enabled: 1
+    path: Assets/Scenes/Pull.unity
+    guid: cd1b72ebbc9667a40a40dc569bf8f81c
   m_configObjects: {}

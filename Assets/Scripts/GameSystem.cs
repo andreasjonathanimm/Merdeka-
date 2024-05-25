@@ -2,26 +2,27 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
+using UnityEngine.SceneManagement;
 
 public class GameSystem : MonoBehaviour
 {
-    public float volume = 0.5f;
+    private float volume;
 
-    private AudioSource audioSource;
+    private Button playButton;
+    private Button mainMenuSettingsButton;
+    private Button exitButton;
 
-    private Canvas systemCanvas;
-
-    private GameObject pauseMenu;
-    private bool isPaused = false;
-    private Button pauseButton;
-    private Button resumeButton;
-    private Button settingsButton;
-    private Button mainMenuButton;
-
-    private GameObject settingsPanel;
-    private bool isSettingsOpen = false;
-    private Slider volumeSlider;
-    private Button exitSettingsButton;
+    public Button[] gameMenuButtons;
+    public AudioSource audioSource;
+    public Canvas systemCanvas;
+    public Slider volumeSlider;
+    public GameObject mainMenu;
+    public GameObject gameMenu;
+    public GameObject pauseMenu;
+    public GameObject pauseButton;
+    public GameObject settingsPanel;
+    public AudioClip mainMenuMusic;
+    public AudioClip buttonSound;
 
     void Awake() {
         // Check if there is already an instance of GameSystem
@@ -38,89 +39,154 @@ public class GameSystem : MonoBehaviour
     // Start is called before the first frame update
     private void Start()
     {
-        audioSource = GetComponent<AudioSource>();
         if (PlayerPrefs.HasKey("volume")) {
             volume = PlayerPrefs.GetFloat("volume");
             audioSource.volume = volume;
         }
 
-        // Find the settings panel and set it to inactive
-        settingsPanel = GameObject.Find("SettingsPanel");
-        settingsPanel.SetActive(false);
-
-        // Find the volume slider and exit settings button
-        volumeSlider = GameObject.Find("VolumeSlider").GetComponent<Slider>();
-        volumeSlider.value = volume;
-        volumeSlider.onValueChanged.AddListener(delegate { adjustVolume(volumeSlider.value); });
-        exitSettingsButton = GameObject.Find("ExitSettingsButton").GetComponent<Button>();
-        exitSettingsButton.onClick.AddListener(delegate { closeSettings(); });
-
-        // Find the pause button and add a listener to it
-        pauseButton = GameObject.Find("PauseButton").GetComponent<Button>();
-        if (pauseButton != null) {
-            pauseButton.onClick.AddListener(delegate { pauseGame(); });
+        if (SceneManager.GetActiveScene().buildIndex == 0) {
+            // Add main menu music
+            playMusic(mainMenuMusic);
+            setMusicLoop(true);
         }
 
-        // Find the resume button and add a listener to it
-        resumeButton = GameObject.Find("ResumeButton").GetComponent<Button>();
-        if (resumeButton != null) {
-            resumeButton.onClick.AddListener(delegate { resumeGame(); });
-        }
-
-        // Find the settings button and add a listener to it
-        settingsButton = GameObject.Find("SettingsButton").GetComponent<Button>();
-        if (settingsButton != null) {
-            settingsButton.onClick.AddListener(delegate { openSettings(); });
+        for (int i = 0; i < gameMenuButtons.Length; i++) {
+            int index = i;
+            gameMenuButtons[index].onClick.AddListener(delegate { loadGame(gameMenuButtons[index].name); });
         }
     }
 
     public void pauseGame() {
+        playSound(buttonSound);
+
         // Pause the game
         Time.timeScale = 0;
-        isPaused = true;
 
         // Open the pause menu
-        pauseMenu = GameObject.Find("PauseMenu");
         pauseMenu.SetActive(true);
 
-        // Find the resume, settings, and exit buttons
-        resumeButton = GameObject.Find("ResumeButton").GetComponent<Button>();
-        resumeButton.onClick.AddListener(delegate { resumeGame(); });
-        settingsButton = GameObject.Find("SettingsButton").GetComponent<Button>();
-        settingsButton.onClick.AddListener(delegate { openSettings(); });
-        mainMenuButton = GameObject.Find("MainMenuButton").GetComponent<Button>();
-        mainMenuButton.onClick.AddListener(delegate { Application.LoadLevel("MainMenu"); });
+        // Disable the pause button
+        pauseButton.SetActive(false);
     }
 
     public void resumeGame() {
-        // Resume the game
-        Time.timeScale = 1;
-        isPaused = false;
+        playSound(buttonSound);
 
         // Close the pause menu
         pauseMenu.SetActive(false);
+
+        pauseButton.SetActive(true);
+
+        // Resume the game
+        Time.timeScale = 1;
+    }
+
+    public void loadGameMenu() {
+        playSound(buttonSound);
+
+        // Load the game menu
+        gameMenu.SetActive(true);
+
+        if (GameObject.Find("MainMenu") != null){
+            // Disable main menu
+            mainMenu = GameObject.Find("MainMenu"); 
+            mainMenu.SetActive(false);
+        }
+        pauseButton.SetActive(false);
+        settingsPanel.SetActive(false);
+        pauseMenu.SetActive(false);
+        systemCanvas.worldCamera = GameObject.Find("Main Camera").GetComponent<Camera>();
+
+        // Reset the time scale
+        Time.timeScale = 1;
+    }
+
+    public void loadGame(string sceneName) {
+        playSound(buttonSound);
+
+        // Load the game
+        SceneManager.LoadScene(sceneName);
+
+        gameMenu.SetActive(false);
+        pauseButton.SetActive(true);
+        settingsPanel.SetActive(false);
+        pauseMenu.SetActive(false);
+        systemCanvas.worldCamera = GameObject.Find("Main Camera").GetComponent<Camera>();
+
+        // Reset the time scale
+        Time.timeScale = 1;
+
+        if (SceneManager.GetActiveScene().buildIndex == 0) {
+            // Add main menu music
+            playMusic(mainMenuMusic);
+            setMusicLoop(true);
+        }
     }
 
     public void openSettings() {
-        // Open the settings panel
+        playSound(buttonSound);
+
+        if (GameObject.Find("MainMenu") != null) {
+            // Disable game Canvas
+            mainMenu = GameObject.Find("MainMenu");
+            mainMenu.SetActive(false);
+        }
+
+        if (SceneManager.GetActiveScene().buildIndex != 0) {
+            // Disable game Canvas
+            pauseMenu.SetActive(false);
+        }
+        gameMenu.SetActive(false);
+        volumeSlider.value = volume;
+        pauseButton.SetActive(false);
         settingsPanel.SetActive(true);
-        isSettingsOpen = true;
     }
 
     public void closeSettings() {
+        playSound(buttonSound);
+
         // Close the settings panel
         settingsPanel.SetActive(false);
-        isSettingsOpen = false;
+
+        if (mainMenu != null){
+            mainMenu.SetActive(true);
+        }
+
+        if (SceneManager.GetActiveScene().buildIndex != 0) {
+            pauseMenu.SetActive(true);
+        }
     }
 
-    public void mainMenu() {
+    public void goToMainMenu() {
+        playSound(buttonSound);
         // Load the main menu
-        Application.LoadLevel("MainMenu");
+        SceneManager.LoadScene(0);
+
+        // Reset the time scale
+        Time.timeScale = 1;
+
+        gameMenu.SetActive(false);
+        pauseButton.SetActive(false);
+        settingsPanel.SetActive(false);
+        pauseMenu.SetActive(false);
+
+        // Add main menu music
+        playMusic(mainMenuMusic);
+        setMusicLoop(true);
     }
 
-    public void adjustVolume(float newVolume) {
+    public void quitGame() {
+        playSound(buttonSound);
+        // Quit the game
+        Application.Quit();
+        if (Application.isEditor) {
+            UnityEditor.EditorApplication.isPlaying = false;
+        }
+    }
+
+    public void adjustVolume() {
         // Globally adjust the volume of the game
-        volume = newVolume;
+        volume = volumeSlider.value;
         audioSource.volume = volume;
 
         // Save the volume to PlayerPrefs
@@ -132,10 +198,11 @@ public class GameSystem : MonoBehaviour
         audioSource.PlayOneShot(sound);
     }
 
-    public void playMusic(AudioClip music) {
+    public void playMusic(AudioClip music, bool loop = true) {
         // Play a music track
         audioSource.clip = music;
         audioSource.Play();
+        audioSource.loop = loop;
     }
 
     public void stopMusic() {

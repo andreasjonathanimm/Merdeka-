@@ -5,6 +5,9 @@ using TMPro;
 
 public class PullGame : MonoBehaviour
 {
+    private GameSystem system;
+
+    private bool gameStarted = false;
     private bool winYet = false;
     private bool controlsEnabled = true;
     public float delay = 0.1f;
@@ -18,14 +21,14 @@ public class PullGame : MonoBehaviour
     public BoxCollider border;
     
     // Sounds
+    public AudioClip music;
     public AudioClip winSound;
     public AudioClip loseSound;
     public AudioClip pullSound;
     public AudioClip endSound;
-    public AudioSource audioSource;
-    public GameObject musicPlayer;
 
     // UI
+    public TMP_Text countdownText;
     public TMP_Text winText;
 
     private void OnWin() {
@@ -33,9 +36,11 @@ public class PullGame : MonoBehaviour
         winYet = true;
         winText.text = "You Win!";
         winText.gameObject.SetActive(true);
-        audioSource.PlayOneShot(winSound);
-        musicPlayer.GetComponent<AudioSource>().PlayOneShot(endSound);
-        musicPlayer.GetComponent<AudioSource>().Stop();
+        system.playSound(winSound);
+        system.playMusic(endSound);
+        system.setMusicLoop(false);
+
+        StartCoroutine(winDelay());
     }
 
     private void OnLose() {
@@ -44,9 +49,11 @@ public class PullGame : MonoBehaviour
         winYet = true;
         winText.text = "You Lose!";
         winText.gameObject.SetActive(true);
-        audioSource.PlayOneShot(loseSound);
-        musicPlayer.GetComponent<AudioSource>().PlayOneShot(endSound);
-        musicPlayer.GetComponent<AudioSource>().Stop();
+        system.playSound(loseSound);
+        system.playMusic(endSound);
+        system.setMusicLoop(false);
+
+        StartCoroutine(winDelay());
     }
 
     private void BotMove() {
@@ -60,6 +67,26 @@ public class PullGame : MonoBehaviour
         }
     }
 
+    private IEnumerator gameCountdown(int seconds) {
+        controlsEnabled = false;
+        yield return new WaitForSeconds(3);
+        controlsEnabled = true;
+        gameStarted = true;
+    }
+
+    private IEnumerator textCountdown(int seconds)
+    {
+        for (int i = seconds; i > 0; i--)
+        {
+            int index = i;
+            countdownText.text = index.ToString() + "...";
+            system.playSound(system.buttonSound);
+            yield return new WaitForSeconds(1);
+        }
+        countdownText.text = "Go!";
+        countdownText.gameObject.SetActive(false);
+    }
+
     private IEnumerator controlDelay()
     {
         controlsEnabled = false;
@@ -67,22 +94,37 @@ public class PullGame : MonoBehaviour
         controlsEnabled = true;
     }
 
+    private IEnumerator winDelay()
+    {
+        yield return new WaitForSeconds(5);
+        system.loadGameMenu();
+    }
+
     public void OnButtonPress() {
-        if (controlsEnabled && !winYet) {
+        if (controlsEnabled && !winYet && gameStarted) {
             rope.transform.position -= new Vector3(0, 0, ropeMoveSpeed);
-            audioSource.PlayOneShot(pullSound);
             foreach (GameObject player in players) {
                 player.transform.position -= new Vector3(0, 0, ropeMoveSpeed);
             }
             foreach (GameObject bot in bots) {
                 bot.transform.position -= new Vector3(0, 0, ropeMoveSpeed);
             }
+            system.playSound(pullSound);
             StartCoroutine(controlDelay());
         }
     }
 
+    private void Start() {
+        system = GameObject.Find("System").GetComponent<GameSystem>();
+        system.playMusic(music);
+
+        // Countdown before game starts
+        StartCoroutine(gameCountdown(3));
+        StartCoroutine(textCountdown(3));
+    }
+
     private void Update() {
-        if (!winYet) {
+        if (!winYet && gameStarted) {
             // Bot pulls randomly
             int random = Random.Range(0, difficulty);
             if (random < 5) {

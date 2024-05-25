@@ -16,10 +16,11 @@ public class PlayerControllerClimb : MonoBehaviour
     public float limit = 1.5f;
     public AudioClip jumpSound;
     public AudioClip fallSound;
-    public AudioSource audioSource;
+    private GameSystem system;
 
     private void Start() {
         rb = GetComponent<Rigidbody>();
+        system = GameObject.Find("System").GetComponent<GameSystem>();
     }
 
     private void checkThreshold() {
@@ -30,13 +31,11 @@ public class PlayerControllerClimb : MonoBehaviour
             }
         }
         if (jump) {
-            audioSource.clip = jumpSound;
-            audioSource.Play();
+            system.playSound(jumpSound);
             rb.AddForce(new Vector3(0, speed, 0), ForceMode.Impulse);
             StartCoroutine(ResetControls());
         } else {
-            audioSource.clip = fallSound;
-            audioSource.Play();
+            system.playSound(fallSound);
             if (transform.position.y > limit) {
                 rb.AddForce(new Vector3(0, -speed/2, 0), ForceMode.Impulse);
             }
@@ -60,5 +59,13 @@ public class PlayerControllerClimb : MonoBehaviour
         Debug.Log("You win! Your ranking is: " + ranking);
         winYet = true;
         thresholdSlider.gameObject.SetActive(false);
+    }
+
+    public void startControls() {
+        controlsEnabled = true;
+    }
+
+    public void stopControls() {
+        controlsEnabled = false;
     }
 }
